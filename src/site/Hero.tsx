@@ -70,9 +70,11 @@ export default function Hero({ name, school, degree, tagline }: Props) {
     <section
       // Taller than the viewport, so the dial holds the screen for a beat
       // before the page moves on — the drape behind it answers to the cursor,
-      // not to this. With motion off nothing is moving, so that extra runway is
-      // dead scroll and collapses to a single screen.
-      className={`relative ${reduceMotion ? 'h-[100svh]' : 'h-[150svh]'}`}
+      // not to this. That runway is only worth its scroll where something is
+      // actually moving under it, so with motion off, and on a phone — where
+      // the drape does not answer to a cursor and the dial is stilled — it
+      // collapses to a single screen.
+      className={`relative h-[100svh] ${reduceMotion ? '' : 'sm:h-[150svh]'}`}
       aria-label="Owen Weltchek"
     >
       <div className="sticky top-0 flex h-[100svh] items-center justify-center">
