@@ -194,7 +194,7 @@ function BlockRow({ block, isOnly, onDrop, onMove, onEdit, onDelete }: RowProps)
       </span>
       <span className="flex flex-wrap gap-2">
         <button type="button" className={button} onClick={onEdit}>
-          Edit
+          View
         </button>
         <button type="button" className={buttonDanger} onClick={onDelete}>
           Delete

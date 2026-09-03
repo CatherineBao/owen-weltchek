@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { createProject, updateProject } from './api'
 import { button, buttonSave, field, input, label, stack, textarea } from './ui'
-import { formatDateRange } from '../dates'
 import type { Project } from '../types'
 
 interface Props {
@@ -133,7 +132,7 @@ export default function ProjectForm({ project, onSaved, onCancel }: Props) {
         {!project && (
           <button
             type="button"
-            className={button}
+            className={buttonSave}
             onClick={() => void save(false)}
             disabled={busy || title.trim() === ''}
           >

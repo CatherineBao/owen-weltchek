@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createBlock, updateBlock } from './api'
 import { uploadFile } from './upload'
-import { button, field, fileInput, input, label, stack, textarea } from './ui'
+import { button, buttonSave, field, fileInput, input, label, stack, textarea } from './ui'
 import { BLOCK_KINDS, type Block, type BlockKind } from '../types'
 
 interface Props {
@@ -172,7 +172,7 @@ export default function BlockForm({ projectId, block, onSaved, onCancel }: Props
       )}
 
       <div className="flex flex-wrap items-center gap-3">
-        <button type="submit" className={button} disabled={busy}>
+        <button type="submit" className={buttonSave} disabled={busy}>
           {busy ? 'Saving...' : 'Save'}
         </button>
         {onCancel && (
