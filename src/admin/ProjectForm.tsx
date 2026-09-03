@@ -119,11 +119,6 @@ export default function ProjectForm({ project, onSaved, onCancel }: Props) {
         </div>
       </div>
 
-      <p className="text-sm text-neutral-600">
-        {`Shows as: ${formatDateRange(startDate, endDate) ?? 'nothing yet'}. `}
-        Leave End blank while the project is ongoing.
-      </p>
-
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="submit"
