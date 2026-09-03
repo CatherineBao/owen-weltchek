@@ -1,11 +1,19 @@
 @import "tailwindcss";
 
 /* The page ground. The artwork is warm orange and black ink, so the off-white
-   carries a trace of the same warmth rather than being a flat grey-white.
-   Defined once here because the hero and the content below have to sit on
-   exactly the same colour — the parallax layers drift across the seam. */
+   is pulled toward tan rather than being a flat grey-white — warm enough to
+   read as paper stock, still light enough that the black ink keeps its
+   contrast. Defined once here because the hero and the content below have to
+   sit on exactly the same colour — the parallax layers drift across the seam. */
 @theme {
-  --color-paper: #faf9f6;
+  --color-paper: #f7f1e6;
+}
+
+/* The sections paint their own ground, but overscroll rubber-banding and the
+   area beyond the last section show the root's. Without this they flash the
+   browser's white against the tan. */
+html {
+  background-color: var(--color-paper);
 }
 
 /* The morse ring inside the O turns like a dial. One slow revolution; the
@@ -23,6 +31,58 @@
 
 @media (prefers-reduced-motion: reduce) {
   .morse-orbit {
+    animation: none;
+  }
+}
+
+/* The dot above the O. Ease-out on the way up and ease-in on the way down, so
+   it slows at the apex and drops back under something like gravity, instead of
+   sliding evenly between the two ends. 52 user units is the hop height in the
+   1920×1080 artboard the hero's SVG maps. */
+@keyframes dot-hop {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: ease-out;
+  }
+  50% {
+    transform: translateY(-52px);
+    animation-timing-function: ease-in;
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.dot-hop {
+  animation: dot-hop 1.6s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot-hop {
+    animation: none;
+  }
+}
+
+/* The scroll cue under the O. A short, soft bounce — it is an invitation, not
+   the sprung hop the dot above the letter makes, so it travels a few pixels and
+   eases at both ends. The fade as the page scrolls is written by the hero's
+   paint loop; only the bounce lives here. */
+@keyframes scroll-cue {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+.scroll-cue {
+  animation: scroll-cue 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue {
     animation: none;
   }
 }
