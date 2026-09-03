@@ -94,7 +94,7 @@ export default function WorldClock({
   phone,
   linkedinUrl,
   resumeUrl,
-  portfolioHref = '/technical',
+  portfolioHref = '/',
 }: {
   email?: string | null
   phone?: string | null

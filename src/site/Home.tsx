@@ -10,8 +10,9 @@ import { useContent } from './useContent'
  * The front of the site: the dial, the world clock, and the about copy. The
  * backdrop is fixed and the page travels across it, so the ground stays put
  * under the reading rather than scrolling away with it — it answers to the
- * cursor instead. The projects themselves live on /technical, so the database
- * is printed in one place rather than laid out twice in two ways.
+ * cursor instead. This is an extension off the front of the site rather than
+ * the front itself: the projects hold the root, so the database is printed in
+ * one place rather than laid out twice in two ways.
  */
 export default function Home() {
   const state = useContent()
@@ -42,7 +43,7 @@ export default function Home() {
         phone={settings?.contact_phone}
         linkedinUrl={settings?.linkedin_url}
         resumeUrl={settings?.resume_url}
-        portfolioHref={settings?.portfolio_url || '/technical'}
+        portfolioHref={settings?.portfolio_url || '/'}
       />
 
       {state.status === 'error' && (

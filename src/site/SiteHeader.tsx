@@ -10,8 +10,8 @@ import { IDENTITY } from './identity'
 const SWING = { duration: 0.26, ease: [0.32, 0.72, 0, 1] } as const
 
 const LINKS = [
-  { to: '/', label: 'Home' },
-  { to: '/technical', label: 'Technical Projects' },
+  { to: '/', label: 'Technical Projects' },
+  { to: '/home', label: 'Home' },
 ]
 
 /**
@@ -77,9 +77,9 @@ export default function SiteHeader() {
             inverted ? 'text-white' : 'text-neutral-800',
           ].join(' ')}
         >
-          {/* The mark leads the bar at every width, and is a way home from
-              anywhere — including from Home, where it is simply inert rather
-              than a second link competing with the one in the nav. */}
+          {/* The mark leads the bar at every width, and is a way back to the
+              front from anywhere — including from the front itself, where it is
+              simply inert rather than a second link competing with the nav. */}
           <Link to="/" aria-label={`${IDENTITY.name} — home`} className="shrink-0">
             <Logo inverted={markInverted} className="h-10 transition-opacity hover:opacity-70" />
           </Link>

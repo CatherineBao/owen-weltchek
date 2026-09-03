@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import Home from './site/Home'
 import Technical from './site/Technical'
 
@@ -11,8 +11,12 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/technical" element={<Technical />} />
+        {/* The work is the front of the site; the about page hangs off it. */}
+        <Route path="/" element={<Technical />} />
+        <Route path="/home" element={<Home />} />
+        {/* The projects used to live here, and links to that address are
+            already out in the world. */}
+        <Route path="/technical" element={<Navigate to="/" replace />} />
         <Route
           path="/update"
           element={
