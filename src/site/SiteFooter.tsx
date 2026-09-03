@@ -43,11 +43,11 @@ export default function SiteFooter({ settings }: { settings: Settings | null }) 
 
         <nav aria-label="Footer" className="grid content-start gap-2">
           <FooterHeading>Navigate</FooterHeading>
-          <Link to="/" className={linkClass}>
-            Technical Projects
-          </Link>
           <Link to="/home" className={linkClass}>
             Home
+          </Link>
+          <Link to="/" className={linkClass}>
+            Technical Projects
           </Link>
           <a href={resume} target="_blank" rel="noreferrer" className={linkClass}>
             Resume

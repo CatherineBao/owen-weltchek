@@ -10,8 +10,8 @@ import { IDENTITY } from './identity'
 const SWING = { duration: 0.26, ease: [0.32, 0.72, 0, 1] } as const
 
 const LINKS = [
-  { to: '/', label: 'Technical Projects' },
   { to: '/home', label: 'Home' },
+  { to: '/', label: 'Technical Projects' },
 ]
 
 /**
