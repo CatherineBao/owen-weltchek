@@ -242,7 +242,7 @@ function ProjectRow({
       </span>
       <span className="flex flex-wrap gap-2">
         <button type="button" className={button} onClick={onToggleOpen}>
-          {isOpen ? 'Close' : 'Open'}
+          {isOpen ? 'Close' : 'Update'}
         </button>
         <button type="button" className={button} onClick={onTogglePublished}>
           {project.published ? 'Unpublish' : 'Publish'}
