@@ -29,10 +29,13 @@ export default function SiteFooter({ settings }: { settings: Settings | null }) 
         <div>
           {/* The same mark the header carries, at the foot of the page and in
               the footer's own black — it takes its colour from the type around
-              it, so nothing here has to be set twice. */}
-          {/* Solid white ground down here, so the mark is turned out the same
-              way the header turns it out over paper. */}
-          <Logo inverted className="mb-4 h-16" />
+              it, so nothing here has to be set twice. It goes the same place
+              the header's does, so the mark means one thing on the whole page.
+              Solid white ground down here, so it is turned out the same way the
+              header turns it out over paper. */}
+          <Link to="/home" aria-label={`${name} — home`} className="inline-block">
+            <Logo inverted className="mb-4 h-16 transition-opacity hover:opacity-70" />
+          </Link>
           <p className="text-[11px] font-semibold tracking-[0.2em] uppercase">
             {name}
           </p>
