@@ -1,11 +1,20 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router'
 import AdminLogin from './AdminLogin'
 import ProjectList from './ProjectList'
 import SettingsForm from './SettingsForm'
 import { listProjects, logout } from './api'
 import { useSession } from './useSession'
+import { button } from './ui'
 import { ApiError } from '../http'
 import type { ProjectWithBlocks } from '../types'
+
+// One column, held to a readable measure and centred, with the same gutter at
+// every width. Everything below inherits this margin rather than setting its
+// own.
+// Each caller sets its own measure — stacking two max-w utilities in one
+// class string leaves the winner to stylesheet order, not to the order here.
+const page = 'mx-auto w-full px-6 py-12'
 
 export default function Update() {
   const { status, refresh, setStatus } = useSession()
@@ -36,30 +45,47 @@ export default function Update() {
 
   if (status === 'anonymous') {
     return (
-      <main>
-        <h1>Update</h1>
+      <main className={`${page} max-w-sm`}>
+        <h1 className="mb-6 text-xl font-semibold">Update</h1>
         <AdminLogin onSuccess={() => void refresh()} />
+        <Link to="/" className={`${button} mt-6 inline-block`}>
+          Back to site
+        </Link>
       </main>
     )
   }
 
   return (
-    <main>
-      <h1>Update</h1>
-      <button
-        type="button"
-        onClick={async () => {
-          await logout()
-          setStatus('anonymous')
-        }}
-      >
-        Log out
-      </button>
+    <main className={`${page} max-w-3xl`}>
+      <header className="mb-10 flex items-center justify-between gap-4 border-b border-neutral-200 pb-4">
+        <h1 className="text-xl font-semibold">Update</h1>
+        <div className="flex items-center gap-2">
+          <Link to="/" className={button}>
+            Back to site
+          </Link>
+          <button
+            type="button"
+            className={button}
+            onClick={async () => {
+              await logout()
+              setStatus('anonymous')
+            }}
+          >
+            Log out
+          </button>
+        </div>
+      </header>
 
-      {error && <p role="alert">{error}</p>}
+      {error && (
+        <p role="alert" className="mb-6 text-sm">
+          {error}
+        </p>
+      )}
 
-      <SettingsForm />
-      <ProjectList projects={projects} onChanged={() => void reload()} />
+      <div className="grid gap-12">
+        <SettingsForm />
+        <ProjectList projects={projects} onChanged={() => void reload()} />
+      </div>
     </main>
   )
 }

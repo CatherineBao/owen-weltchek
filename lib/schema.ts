@@ -16,9 +16,13 @@ export const projects = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     title: text('title').notNull(),
-    subtitle: text('subtitle'),
-    // Text, not integer: "ongoing" and "2023-24" are both real answers.
-    year: text('year'),
+    // Long-form: paragraphs of prose, not a one-line tagline.
+    description: text('description'),
+    // "YYYY-MM" — month precision, because a project starts in a month, not a
+    // day. Text, not date: Postgres has no month type and the strings sort
+    // correctly as-is. A blank endDate with a startDate set means ongoing.
+    startDate: text('start_date'),
+    endDate: text('end_date'),
     sortOrder: integer('sort_order').notNull().default(0),
     published: boolean('published').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -84,10 +88,16 @@ export const siteSettings = pgTable('site_settings', {
 export const SETTING_KEYS = [
   'site_title',
   'site_tagline',
+  'site_school',
+  'site_degree',
   'about_body',
   'contact_email',
+  'contact_phone',
+  'linkedin_url',
+  'portfolio_url',
+  // A link now, not an upload: the resume lives wherever it already lives
+  // (Drive, a PDF host) and is swapped by pasting a new URL.
   'resume_url',
-  'resume_file_name',
 ] as const
 
 export type SettingKey = (typeof SETTING_KEYS)[number]

@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import Home from './site/Home'
+import Technical from './site/Technical'
 
 // Lazy so the editor — and the upload SDK it pulls in — never ships to
 // visitors who only ever load the public page.
@@ -11,6 +12,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/technical" element={<Technical />} />
         <Route
           path="/update"
           element={

@@ -1,9 +1,18 @@
 import { motion } from 'framer-motion'
 import Hero from './Hero'
-import ProjectView from './ProjectView'
+import Backdrop from './Backdrop'
+import SiteFooter from './SiteFooter'
+import SiteHeader from './SiteHeader'
+import WorldClock from './WorldClock'
 import { useContent } from './useContent'
 
-/** The whole public site: one scrolling page. */
+/**
+ * The front of the site: the dial, the world clock, and the about copy. The
+ * backdrop is fixed and the page travels across it, so the ground stays put
+ * under the reading rather than scrolling away with it — it answers to the
+ * cursor instead. The projects themselves live on /technical, so the database
+ * is printed in one place rather than laid out twice in two ways.
+ */
 export default function Home() {
   const state = useContent()
 
@@ -12,48 +21,50 @@ export default function Home() {
   const settings = state.status === 'ready' ? state.data.settings : null
 
   return (
-    <main className="bg-paper">
-      <Hero tagline={settings?.site_tagline} />
+    // No ground of its own: the paper is on <html> and the plates sit between
+    // the two. Anything here that paints a background hides them.
+    <main className="relative">
+      <Backdrop />
+      <SiteHeader />
 
-      {state.status === 'error' && <p>{state.message}</p>}
+      <Hero
+        name={settings?.site_title}
+        school={settings?.site_school}
+        degree={settings?.site_degree}
+        tagline={settings?.site_tagline}
+      />
+
+      {/* Time-driven, not content-driven, so it paints with the hero and fills
+          in the contact details when the settings land. Solid clay by design —
+          it is the one band that shuts the drape out. */}
+      <WorldClock
+        email={settings?.contact_email}
+        phone={settings?.contact_phone}
+        linkedinUrl={settings?.linkedin_url}
+        resumeUrl={settings?.resume_url}
+        portfolioHref={settings?.portfolio_url || '/technical'}
+      />
+
+      {state.status === 'error' && (
+        <p className="relative z-10 bg-paper/85 px-6 py-10 text-sm text-neutral-600">
+          {state.message}
+        </p>
+      )}
 
       {state.status === 'ready' && (
         <motion.div
+          id="work"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="relative z-10 bg-paper"
+          // A paper wash rather than solid paper: enough to carry running text,
+          // sheer enough that the drape behind it still reads.
+          className="relative z-10 bg-paper/85"
         >
-          <header>
-            <h2>{state.data.settings.site_title || 'Owen Weltchek'}</h2>
-          </header>
-
-          {state.data.settings.about_body && (
-            <section>
-              {state.data.settings.about_body.split(/\n{2,}/).map((para, i) => (
-                <p key={i}>{para}</p>
-              ))}
-            </section>
-          )}
-
-          {state.data.projects.map((project) => (
-            <ProjectView key={project.id} project={project} />
-          ))}
-
-          <footer>
-            {state.data.settings.resume_url && (
-              <a href={state.data.settings.resume_url} target="_blank" rel="noreferrer">
-                {state.data.settings.resume_file_name || 'Resume'}
-              </a>
-            )}
-            {state.data.settings.contact_email && (
-              <a href={`mailto:${state.data.settings.contact_email}`}>
-                {state.data.settings.contact_email}
-              </a>
-            )}
-          </footer>
         </motion.div>
       )}
+
+      <SiteFooter settings={settings} />
     </main>
   )
 }

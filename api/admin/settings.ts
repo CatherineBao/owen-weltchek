@@ -1,5 +1,4 @@
 import { isAuthed } from '../../lib/auth'
-import { safeDeleteBlobs } from '../../lib/blobs'
 import { db } from '../../lib/db'
 import { error, json, readJson } from '../../lib/http'
 import { SETTING_KEYS, type SettingKey, siteSettings } from '../../lib/schema'
@@ -34,8 +33,6 @@ export async function PUT(request: Request): Promise<Response> {
   }
   if (entries.length === 0) return error(400, 'No settings given')
 
-  const previous = await readAll()
-
   await Promise.all(
     entries.map(([key, value]) =>
       db
@@ -47,12 +44,6 @@ export async function PUT(request: Request): Promise<Response> {
         }),
     ),
   )
-
-  // Replacing the resume should not leave the old PDF behind.
-  const nextResume = entries.find(([k]) => k === 'resume_url')?.[1]
-  if (nextResume !== undefined && previous.resume_url && previous.resume_url !== nextResume) {
-    await safeDeleteBlobs([previous.resume_url])
-  }
 
   return json({ settings: await readAll() })
 }

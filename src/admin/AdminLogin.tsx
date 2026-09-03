@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { login } from './api'
+import { button, field, input, label, stack } from './ui'
 
 export default function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
   const [password, setPassword] = useState('')
@@ -22,20 +23,31 @@ export default function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <form onSubmit={submit}>
-      <label htmlFor="password">Password</label>
-      <input
-        id="password"
-        type="password"
-        autoComplete="current-password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <button type="submit" disabled={busy || password === ''}>
-        {busy ? 'Signing in...' : 'Sign in'}
-      </button>
-      {error && <p role="alert">{error}</p>}
+    <form onSubmit={submit} className={stack}>
+      <div className={field}>
+        <label htmlFor="password" className={label}>
+          Password
+        </label>
+        <input
+          id="password"
+          type="password"
+          autoComplete="current-password"
+          className={input}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <button type="submit" className={button} disabled={busy || password === ''}>
+          {busy ? 'Signing in...' : 'Sign in'}
+        </button>
+      </div>
+      {error && (
+        <p role="alert" className="text-sm">
+          {error}
+        </p>
+      )}
     </form>
   )
 }

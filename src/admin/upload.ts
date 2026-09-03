@@ -1,4 +1,4 @@
-import { upload } from '@vercel/blob/client'
+import { uploadPresigned } from '@vercel/blob/client'
 
 export interface UploadedFile {
   url: string
@@ -9,14 +9,14 @@ export interface UploadedFile {
 
 /**
  * Sends the file browser -> Vercel Blob directly, with our own endpoint only
- * minting the token. `multipart` splits large files, which keeps big PDFs and
- * camera images reliable.
+ * signing the upload URL. `multipart` splits large files, which keeps big PDFs
+ * and camera images reliable.
  */
 export async function uploadFile(
   file: File,
   onProgress?: (percentage: number) => void,
 ): Promise<UploadedFile> {
-  const blob = await upload(file.name, file, {
+  const blob = await uploadPresigned(file.name, file, {
     access: 'public',
     handleUploadUrl: '/api/admin/upload',
     multipart: file.size > 5 * 1024 * 1024,

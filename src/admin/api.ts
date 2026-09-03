@@ -22,8 +22,9 @@ export function listProjects() {
 
 export interface ProjectInput {
   title?: string
-  subtitle?: string
-  year?: string
+  description?: string
+  startDate?: string
+  endDate?: string
   sortOrder?: number
   published?: boolean
 }
@@ -40,6 +41,14 @@ export function updateProject(id: string, input: ProjectInput) {
     `/api/admin/projects?id=${encodeURIComponent(id)}`,
     { method: 'PATCH', body: JSON.stringify(input) },
   )
+}
+
+/** Persists a whole ordering at once; see the PUT handler for why. */
+export function reorderProjects(ids: string[]) {
+  return request<void>('/api/admin/projects', {
+    method: 'PUT',
+    body: JSON.stringify({ ids }),
+  })
 }
 
 export function deleteProject(id: string) {
@@ -71,6 +80,14 @@ export function updateBlock(id: string, input: BlockInput) {
   return request<{ block: Block }>(`/api/admin/blocks?id=${encodeURIComponent(id)}`, {
     method: 'PATCH',
     body: JSON.stringify(input),
+  })
+}
+
+/** Persists a whole ordering within one project; see the PUT handler for why. */
+export function reorderBlocks(projectId: string, ids: string[]) {
+  return request<void>('/api/admin/blocks', {
+    method: 'PUT',
+    body: JSON.stringify({ projectId, ids }),
   })
 }
 

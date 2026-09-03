@@ -1,12 +1,16 @@
 @import "tailwindcss";
 
-/* The page ground. The artwork is warm orange and black ink, so the off-white
-   is pulled toward tan rather than being a flat grey-white — warm enough to
-   read as paper stock, still light enough that the black ink keeps its
-   contrast. Defined once here because the hero and the content below have to
-   sit on exactly the same colour — the parallax layers drift across the seam. */
+/* The page ground. It is the paper the drape was screened on: the plate is a
+   scan, it carries its own white, and it is multiplied into the page, so any
+   ground but that white leaves it sitting in a panel of its own.
+   Defined once here because the backdrop, the hero and the content below all
+   have to sit on exactly the same colour. */
 @theme {
-  --color-paper: #f7f1e6;
+  --color-paper: #ffffff;
+  /* The terracotta the wordmark itself is printed in, sampled off the artwork.
+     The world clock stands the whole page on it, so it lives here beside the
+     paper rather than as a one-off hex in that component. */
+  --color-clay: #d06941;
 }
 
 /* The sections paint their own ground, but overscroll rubber-banding and the
@@ -37,15 +41,16 @@ html {
 
 /* The dot above the O. Ease-out on the way up and ease-in on the way down, so
    it slows at the apex and drops back under something like gravity, instead of
-   sliding evenly between the two ends. 52 user units is the hop height in the
-   1920×1080 artboard the hero's SVG maps. */
+   sliding evenly between the two ends. The hop is given in percentages of the
+   dot's own height, because the dot is sized in `em` off a wordmark that scales
+   with the viewport — a fixed pixel hop would tower over it on a phone. */
 @keyframes dot-hop {
   0% {
     transform: translateY(0);
     animation-timing-function: ease-out;
   }
   50% {
-    transform: translateY(-52px);
+    transform: translateY(-220%);
     animation-timing-function: ease-in;
   }
   100% {
@@ -59,30 +64,6 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   .dot-hop {
-    animation: none;
-  }
-}
-
-/* The scroll cue under the O. A short, soft bounce — it is an invitation, not
-   the sprung hop the dot above the letter makes, so it travels a few pixels and
-   eases at both ends. The fade as the page scrolls is written by the hero's
-   paint loop; only the bounce lives here. */
-@keyframes scroll-cue {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(5px);
-  }
-}
-
-.scroll-cue {
-  animation: scroll-cue 1.8s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scroll-cue {
     animation: none;
   }
 }

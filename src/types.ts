@@ -37,8 +37,10 @@ export interface Block {
 export interface Project {
   id: string
   title: string
-  subtitle: string | null
-  year: string | null
+  description: string | null
+  /** "YYYY-MM". Blank end with a start set means ongoing. */
+  startDate: string | null
+  endDate: string | null
   sortOrder: number
   published: boolean
   createdAt: string
@@ -50,10 +52,16 @@ export type ProjectWithBlocks = Project & { blocks: Block[] }
 export const SETTING_KEYS = [
   'site_title',
   'site_tagline',
+  'site_school',
+  'site_degree',
   'about_body',
   'contact_email',
+  'contact_phone',
+  'linkedin_url',
+  'portfolio_url',
+  // A link now, not an upload: the resume lives wherever it already lives
+  // (Drive, a PDF host) and is swapped by pasting a new URL.
   'resume_url',
-  'resume_file_name',
 ] as const
 
 export type SettingKey = (typeof SETTING_KEYS)[number]
