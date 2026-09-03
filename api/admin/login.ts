@@ -1,5 +1,5 @@
-import { checkPassword, createSessionCookie } from '../../lib/auth'
-import { error, json, readJson } from '../../lib/http'
+import { checkPassword, createSessionCookie } from '../../lib/auth.js'
+import { error, json, readJson } from '../../lib/http.js'
 
 export async function POST(request: Request): Promise<Response> {
   const body = await readJson<{ password?: unknown }>(request)

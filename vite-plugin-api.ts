@@ -41,8 +41,8 @@ export function apiPlugin(): Plugin {
         }
 
         try {
-          // ssrLoadModule compiles TypeScript and resolves the extensionless
-          // relative imports in lib/, the same way esbuild does on Vercel.
+          // ssrLoadModule compiles TypeScript and maps the '.js' specifiers in
+          // lib/ back to their .ts sources, the same way esbuild does on Vercel.
           const mod = await server.ssrLoadModule(modulePath)
           const method = (req.method ?? 'GET').toUpperCase()
           const handler = mod[method] ?? mod.default?.fetch

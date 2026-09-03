@@ -6,9 +6,10 @@
     "types": ["node"],
     "skipLibCheck": true,
 
-    /* Bundler mode — matches how Vercel bundles /api */
-    "module": "esnext",
-    "moduleResolution": "bundler",
+    /* nodenext — matches how Vercel type-checks and runs /api,
+       so missing ".js" import extensions fail here and not in the deploy log. */
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,

@@ -1,7 +1,7 @@
-import { isAuthed } from '../../lib/auth'
-import { db } from '../../lib/db'
-import { error, json, readJson } from '../../lib/http'
-import { SETTING_KEYS, type SettingKey, siteSettings } from '../../lib/schema'
+import { isAuthed } from '../../lib/auth.js'
+import { db } from '../../lib/db.js'
+import { error, json, readJson } from '../../lib/http.js'
+import { SETTING_KEYS, type SettingKey, siteSettings } from '../../lib/schema.js'
 
 const isSettingKey = (k: string): k is SettingKey =>
   (SETTING_KEYS as readonly string[]).includes(k)

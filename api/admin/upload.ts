@@ -3,8 +3,8 @@ import {
   type HandleUploadPresignedBody,
   handleUploadPresigned,
 } from '@vercel/blob/client'
-import { isAuthed } from '../../lib/auth'
-import { error, json } from '../../lib/http'
+import { isAuthed } from '../../lib/auth.js'
+import { error, json } from '../../lib/http.js'
 
 const ALLOWED_CONTENT_TYPES = [
   'image/jpeg',

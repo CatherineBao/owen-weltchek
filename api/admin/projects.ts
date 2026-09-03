@@ -1,9 +1,9 @@
 import { asc, desc, eq, sql } from 'drizzle-orm'
-import { isAuthed } from '../../lib/auth'
-import { safeDeleteBlobs } from '../../lib/blobs'
-import { db } from '../../lib/db'
-import { error, idParam, json, noContent, readJson } from '../../lib/http'
-import { blocks, projects } from '../../lib/schema'
+import { isAuthed } from '../../lib/auth.js'
+import { safeDeleteBlobs } from '../../lib/blobs.js'
+import { db } from '../../lib/db.js'
+import { error, idParam, json, noContent, readJson } from '../../lib/http.js'
+import { blocks, projects } from '../../lib/schema.js'
 
 type ProjectInput = {
   title?: unknown

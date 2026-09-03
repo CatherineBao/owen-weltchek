@@ -1,5 +1,5 @@
-import { isAuthed } from '../../lib/auth'
-import { json } from '../../lib/http'
+import { isAuthed } from '../../lib/auth.js'
+import { json } from '../../lib/http.js'
 
 /**
  * The session cookie is HttpOnly, so the admin page can't read it directly —

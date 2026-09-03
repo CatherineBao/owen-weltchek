@@ -1,7 +1,7 @@
 import { asc, desc, eq } from 'drizzle-orm'
-import { db } from '../lib/db'
-import { error, json } from '../lib/http'
-import { blocks, projects, siteSettings } from '../lib/schema'
+import { db } from '../lib/db.js'
+import { error, json } from '../lib/http.js'
+import { blocks, projects, siteSettings } from '../lib/schema.js'
 
 /**
  * The whole public site in one request. Published projects only, each with its
