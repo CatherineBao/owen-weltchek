@@ -1,15 +1,26 @@
-import { motion } from 'framer-motion'
+import { Suspense, lazy } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router'
+import Home from './site/Home'
 
-function App() {
+// Lazy so the editor — and the upload SDK it pulls in — never ships to
+// visitors who only ever load the public page.
+const Update = lazy(() => import('./admin/Update'))
+
+export default function App() {
   return (
-    <motion.main
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
-      <h1>Owen Weltchek</h1>
-    </motion.main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/update"
+          element={
+            <Suspense fallback={null}>
+              <Update />
+            </Suspense>
+          }
+        />
+        <Route path="*" element={<main><p>Not found</p></main>} />
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App

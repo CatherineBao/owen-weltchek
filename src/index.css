@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+/* The page ground. The artwork is warm orange and black ink, so the off-white
+   carries a trace of the same warmth rather than being a flat grey-white.
+   Defined once here because the hero and the content below have to sit on
+   exactly the same colour — the parallax layers drift across the seam. */
+@theme {
+  --color-paper: #faf9f6;
+}
+
+/* The morse ring inside the O turns like a dial. One slow revolution; the
+   spin sits on the <g> so the layer's scroll parallax can own the transform
+   of the <svg> above it. */
+@keyframes morse-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.morse-orbit {
+  animation: morse-orbit 72s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .morse-orbit {
+    animation: none;
+  }
+}
