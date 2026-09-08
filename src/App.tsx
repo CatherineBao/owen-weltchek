@@ -1,7 +1,6 @@
 import { Suspense, lazy } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import Home from './site/Home'
-import Technical from './site/Technical'
 
 // Lazy so the editor — and the upload SDK it pulls in — never ships to
 // visitors who only ever load the public page.
@@ -11,11 +10,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* The work is the front of the site; the about page hangs off it. */}
-        <Route path="/" element={<Technical />} />
-        <Route path="/home" element={<Home />} />
-        {/* The projects used to live here, and links to that address are
-            already out in the world. */}
+        {/* One page: the mark, the clock and the work all live at the root. */}
+        <Route path="/" element={<Home />} />
+        {/* The two halves used to be pages of their own, and links to both
+            addresses are already out in the world. */}
+        <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="/technical" element={<Navigate to="/" replace />} />
         <Route
           path="/update"

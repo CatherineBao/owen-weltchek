@@ -1,34 +1,65 @@
-import logoSrc from '../assets/logo-ow.png'
+import { MORSE_SEGMENTS, MORSE_UNITS } from './morse'
+
+// The dial, drawn into a 100×100 viewBox of its own so the geometry stays
+// readable at any size. The stroke is the one thing a caller tunes: the message
+// is a line of morse, and a heavy stroke turns every dot into a radial bar and
+// loses the reading — but at header size a hairline disappears altogether, so
+// small printings ask for a heavier one.
+const RING = { r: 45, width: 1.6 }
+
+const INK = { ink: '#1c1917', paper: '#ffffff' } as const
 
 /**
- * The OW monogram, printed exactly as it was drawn: the mark sitting slightly
- * off centre on its own white ground, untrimmed and unsquared. The white is
- * part of it — it is what makes the thing a logo rather than two letters loose
- * on the drape — so what changes from ground to ground is which way round it is
- * printed, never whether the tile is there.
+ * The mark: the name written round a circle in morse. It is the logo wherever
+ * the site prints one — the bar, the foot of the page, and the banner at the
+ * top — so the same line of code stands for the name at every size. It carries
+ * no ground of its own, which is why the only thing that changes from one
+ * ground to the next is the ink.
  */
 export default function Logo({
   className = '',
-  inverted = false,
+  tone = 'ink',
+  spin = false,
+  strokeWidth = RING.width,
 }: {
   className?: string
-  inverted?: boolean
+  /** Which way the ring is inked: near-black on paper, white on the clay band. */
+  tone?: 'ink' | 'paper'
+  /** Whether the dial turns. The banner's does; the bar's and the footer's don't. */
+  spin?: boolean
+  strokeWidth?: number
 }) {
   return (
-    <img
-      src={logoSrc}
+    <svg
+      viewBox="0 0 100 100"
       // Decorative wherever it stands: every caller either sets the name in
       // type beside it or gives its link an accessible name of its own.
-      alt=""
-      draggable={false}
-      // Height is all a caller gives; the file's own proportions do the rest.
-      // Turned out, the tile goes near-black and the letters light — which is
-      // how the mark holds a white page, where its own white ground would
-      // otherwise be nothing at all. The filter is eased because the header
-      // flips it mid-scroll as the clay band passes under the bar.
-      className={`w-auto rounded-md transition-[filter] duration-300 select-none ${
-        inverted ? 'invert' : ''
-      } ${className}`}
-    />
+      aria-hidden="true"
+      // Height is all a caller gives; the square viewBox does the rest. The
+      // colour is eased because the header flips it mid-scroll as the clay
+      // band passes under the bar.
+      className={`w-auto transition-[stroke] duration-300 select-none ${className}`}
+    >
+      {/* The spin sits on the <g> rather than the <svg> so it stays the dial's
+          own, whatever else is done to the box above it. */}
+      <g
+        className={spin ? 'morse-orbit' : undefined}
+        style={{ transformBox: 'view-box', transformOrigin: '50px 50px' }}
+      >
+        <circle
+          cx="50"
+          cy="50"
+          r={RING.r}
+          fill="none"
+          stroke={INK[tone]}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          // pathLength rescales the circle to the message's own clock, so the
+          // dasharray below is literally the morse timing.
+          pathLength={MORSE_UNITS}
+          strokeDasharray={MORSE_SEGMENTS.join(' ')}
+        />
+      </g>
+    </svg>
   )
 }
