@@ -3,7 +3,7 @@ import { Reorder, useDragControls } from 'framer-motion'
 import BlockList from './BlockList'
 import ProjectForm from './ProjectForm'
 import { deleteProject, reorderProjects, updateProject } from './api'
-import { button, buttonDanger, sectionHeading } from './ui'
+import { alert, button, buttonDanger, sectionHeading } from './ui'
 import type { ProjectWithBlocks } from '../types'
 
 interface Props {
@@ -90,7 +90,7 @@ export default function ProjectList({ projects, onChanged }: Props) {
       <div>
         <h2 className={`${sectionHeading} mb-4`}>Projects</h2>
         {error && (
-          <p role="alert" className="mb-4 text-sm">
+          <p role="alert" className={`mb-4 ${alert}`}>
             {error}
           </p>
         )}

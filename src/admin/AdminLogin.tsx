@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { login } from './api'
-import { button, field, input, label, stack } from './ui'
+import { alert, button, field, input, label, stack } from './ui'
 
 export default function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
   const [password, setPassword] = useState('')
@@ -44,7 +44,7 @@ export default function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
         </button>
       </div>
       {error && (
-        <p role="alert" className="text-sm">
+        <p role="alert" className={alert}>
           {error}
         </p>
       )}

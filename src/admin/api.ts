@@ -66,6 +66,8 @@ export interface BlockInput {
   fileName?: string
   mimeType?: string
   fileSize?: number
+  /** Kind-specific extras; a carousel's slides live here as `images`. */
+  meta?: Record<string, unknown>
   sortOrder?: number
 }
 

@@ -3,7 +3,13 @@ import { isAuthed } from '../../lib/auth.js'
 import { safeDeleteBlobs } from '../../lib/blobs.js'
 import { db } from '../../lib/db.js'
 import { error, idParam, json, noContent, readJson } from '../../lib/http.js'
-import { BLOCK_KINDS, type BlockKind, blocks, projects } from '../../lib/schema.js'
+import {
+  BLOCK_KINDS,
+  type BlockKind,
+  blocks,
+  carouselImagesFromMeta,
+  projects,
+} from '../../lib/schema.js'
 
 type BlockInput = {
   projectId?: unknown
@@ -37,9 +43,24 @@ function clean(input: BlockInput) {
   if (typeof input.fileSize === 'number') out.fileSize = Math.trunc(input.fileSize)
   if (typeof input.sortOrder === 'number') out.sortOrder = Math.trunc(input.sortOrder)
   if (input.meta && typeof input.meta === 'object' && !Array.isArray(input.meta)) {
-    out.meta = input.meta
+    // Carousel slides are re-read rather than trusted: they arrive as jsonb and
+    // are printed straight onto the public page, so an entry without a usable
+    // url is dropped here instead of rendering as a broken image later.
+    const { images, ...rest } = input.meta as Record<string, unknown>
+    out.meta =
+      images === undefined
+        ? rest
+        : { ...rest, images: carouselImagesFromMeta({ images }) }
   }
   return out
+}
+
+/** Every uploaded file a block owns: its own, plus any carousel slides. */
+function blockFileUrls(row: { url: string | null; meta: unknown }): string[] {
+  return [
+    ...(row.url ? [row.url] : []),
+    ...carouselImagesFromMeta(row.meta).map((image) => image.url),
+  ]
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -131,16 +152,20 @@ export async function PATCH(request: Request): Promise<Response> {
 
   // Replacing an uploaded file leaves the old one behind unless we clear it.
   const [existing] = await db
-    .select({ url: blocks.url })
+    .select({ url: blocks.url, meta: blocks.meta })
     .from(blocks)
     .where(eq(blocks.id, id))
   if (!existing) return error(404, 'Block not found')
 
   const [block] = await db.update(blocks).set(values).where(eq(blocks.id, id)).returning()
 
-  if (typeof values.url === 'string' && existing.url && existing.url !== values.url) {
-    await safeDeleteBlobs([existing.url])
-  }
+  // Whatever the block used to point at and no longer does — the replaced file,
+  // or the slides removed from a carousel in this same save. Compared by url
+  // rather than by field, so a slide promoted to the block's own url (or the
+  // reverse) isn't deleted out from under the row that still uses it.
+  const kept = new Set(blockFileUrls(block))
+  const dropped = blockFileUrls(existing).filter((url) => !kept.has(url))
+  if (dropped.length > 0) await safeDeleteBlobs(dropped)
 
   return json({ block })
 }
@@ -154,9 +179,9 @@ export async function DELETE(request: Request): Promise<Response> {
   const [deleted] = await db
     .delete(blocks)
     .where(eq(blocks.id, id))
-    .returning({ url: blocks.url })
+    .returning({ url: blocks.url, meta: blocks.meta })
   if (!deleted) return error(404, 'Block not found')
 
-  await safeDeleteBlobs([deleted.url])
+  await safeDeleteBlobs(blockFileUrls(deleted))
   return noContent()
 }

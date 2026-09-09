@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import ContactMarks from './ContactMarks'
 import Logo from './Logo'
-import { CONTACT, IDENTITY, RESUME_URL } from './identity'
+import { CONTACT, IDENTITY } from './identity'
 import type { Settings } from '../types'
 
 /**
@@ -17,7 +17,6 @@ export default function SiteFooter({ settings }: { settings: Settings | null }) 
   const mail = settings?.contact_email || CONTACT.email
   const tel = settings?.contact_phone || CONTACT.phone
   const linkedin = settings?.linkedin_url || CONTACT.linkedin
-  const resume = settings?.resume_url || RESUME_URL
   const name = settings?.site_title || IDENTITY.name
   const school = settings?.site_school || IDENTITY.school
   const degree = settings?.site_degree || IDENTITY.degree
@@ -32,7 +31,7 @@ export default function SiteFooter({ settings }: { settings: Settings | null }) 
               anywhere else. It goes the same place the header's does, so the
               mark means one thing on the whole page. */}
           <Link to="/" aria-label={`${name} — home`} className="inline-block">
-            <Logo className="mb-4 h-16 transition-opacity hover:opacity-70" />
+            <Logo spin className="mb-4 h-16 transition-opacity hover:opacity-70" />
           </Link>
           <p className="text-[11px] font-semibold tracking-[0.2em] uppercase">
             {name}
@@ -48,13 +47,10 @@ export default function SiteFooter({ settings }: { settings: Settings | null }) 
             Home
           </Link>
           <a href="#work" className={linkClass}>
-            Technical Projects
+            Projects
           </a>
           <a href="#contact" className={linkClass}>
             Contact
-          </a>
-          <a href={resume} target="_blank" rel="noreferrer" className={linkClass}>
-            Resume
           </a>
         </nav>
 

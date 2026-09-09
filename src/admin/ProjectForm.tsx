@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createProject, updateProject } from './api'
-import { button, buttonSave, field, input, label, stack, textarea } from './ui'
+import { alert, button, buttonSave, field, input, label, stack, textarea } from './ui'
 import type { Project } from '../types'
 
 interface Props {
@@ -145,14 +145,8 @@ export default function ProjectForm({ project, onSaved, onCancel }: Props) {
           </button>
         )}
       </div>
-      {!project && (
-        <p className="text-sm text-neutral-600">
-          Publish puts it on the site straight away. A draft stays here until you
-          publish it from the list.
-        </p>
-      )}
       {error && (
-        <p role="alert" className="text-sm">
+        <p role="alert" className={alert}>
           {error}
         </p>
       )}

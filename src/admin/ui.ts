@@ -44,4 +44,21 @@ export const buttonDanger =
 /** The vertical rhythm inside a form or a list. */
 export const stack = 'grid gap-4'
 
+/**
+ * For any line that prints something the editor did not write: a file name, a
+ * blob URL, an error out of the upload. The two utilities are not decoration.
+ * A grid item's default `min-width: auto` sizes it to its content, so one long
+ * run with nothing to break on — `President_Truman_in_the_Cabinet_Room...png`
+ * has no spaces and no hyphens, and a browser will not break on underscores —
+ * widens the column it sits in, and every `w-full` control in the form widens
+ * with it until the form runs off the page. `min-w-0` lets the item be narrower
+ * than its content; `break-words` then wraps the run rather than letting it
+ * push. Both are needed, and needed on every grid item down the chain: one
+ * ancestor left at `auto` grows for all of them.
+ */
+export const breakable = 'min-w-0 break-words'
+
+/** An error or status line, which is one of the above. */
+export const alert = `${breakable} text-sm`
+
 export const sectionHeading = 'text-lg font-semibold'

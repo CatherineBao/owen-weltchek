@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getSettings, saveSettings } from './api'
-import { buttonSave, field, input, label, sectionHeading, stack, textarea } from './ui'
+import { alert, buttonSave, field, input, label, sectionHeading, stack, textarea } from './ui'
 import type { Settings } from '../types'
 
 export default function SettingsForm() {
@@ -151,7 +151,7 @@ export default function SettingsForm() {
 
         <div className={field}>
           <label htmlFor="portfolio_url" className={label}>
-            Technical portfolio URL
+            Portfolio URL
           </label>
           <input
             id="portfolio_url"
@@ -162,20 +162,6 @@ export default function SettingsForm() {
           />
         </div>
 
-        <div className={field}>
-          <label htmlFor="resume_url" className={label}>
-            Resume URL
-          </label>
-          <input
-            id="resume_url"
-            type="url"
-            className={input}
-            value={settings.resume_url ?? ''}
-            onChange={(e) => set('resume_url')(e.target.value)}
-            placeholder="https://drive.google.com/file/d/.../view"
-          />
-        </div>
-
         <div className="flex items-center gap-3">
           <button type="submit" className={buttonSave} disabled={busy}>
             {busy ? 'Saving...' : 'Save site details'}
@@ -183,7 +169,7 @@ export default function SettingsForm() {
           {status && <span className="text-sm">{status}</span>}
         </div>
         {error && (
-          <p role="alert" className="text-sm">
+          <p role="alert" className={alert}>
             {error}
           </p>
         )}

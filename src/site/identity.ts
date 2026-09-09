@@ -19,11 +19,6 @@ export const CONTACT = {
   linkedin: 'https://www.linkedin.com/in/weltchek/',
 }
 
-// The resume itself, hosted on Drive rather than in the bundle so it can be
-// swapped without a deploy.
-export const RESUME_URL =
-  'https://drive.google.com/file/d/1LyoYdE8M7GDjD92HEFH4Dg83mt7UHUG1/view'
-
 /** Digits only — a space or a bracket is not valid inside a tel: URI. */
 export function telHref(phone: string): string {
   return `tel:${phone.replace(/[^\d+]/g, '')}`

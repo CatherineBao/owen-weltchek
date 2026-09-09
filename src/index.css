@@ -38,32 +38,3 @@ html {
     animation: none;
   }
 }
-
-/* The dot above the O. Ease-out on the way up and ease-in on the way down, so
-   it slows at the apex and drops back under something like gravity, instead of
-   sliding evenly between the two ends. The hop is given in percentages of the
-   dot's own height, because the dot is sized in `em` off a wordmark that scales
-   with the viewport — a fixed pixel hop would tower over it on a phone. */
-@keyframes dot-hop {
-  0% {
-    transform: translateY(0);
-    animation-timing-function: ease-out;
-  }
-  50% {
-    transform: translateY(-220%);
-    animation-timing-function: ease-in;
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-.dot-hop {
-  animation: dot-hop 1.6s infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dot-hop {
-    animation: none;
-  }
-}

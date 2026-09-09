@@ -5,7 +5,7 @@ import ProjectList from './ProjectList'
 import SettingsForm from './SettingsForm'
 import { listProjects, logout } from './api'
 import { useSession } from './useSession'
-import { button } from './ui'
+import { alert, button } from './ui'
 import { ApiError } from '../http'
 import type { ProjectWithBlocks } from '../types'
 
@@ -77,7 +77,7 @@ export default function Update() {
       </header>
 
       {error && (
-        <p role="alert" className="mb-6 text-sm">
+        <p role="alert" className={`mb-6 ${alert}`}>
           {error}
         </p>
       )}

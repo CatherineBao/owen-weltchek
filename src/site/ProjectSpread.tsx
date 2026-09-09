@@ -1,6 +1,7 @@
+import Carousel from './Carousel'
 import { toEmbedUrl } from './embed'
 import { formatDateRange } from '../dates'
-import type { Block, ProjectWithBlocks } from '../types'
+import { type Block, type ProjectWithBlocks, carouselImages } from '../types'
 
 /**
  * One project, printed across the page: the writing in one half, everything it
@@ -103,6 +104,10 @@ function MediaItem({ block }: { block: Block }) {
   // On an image the body is the caption *and* the alt text, so printing it
   // underneath as well would have a screen reader read it twice; the frame is
   // marked presentational there and the caption left to stand on its own.
+  //
+  // A carousel is the other way round: each slide carries its own caption, and
+  // the block's body — if there is one — introduces the set, so it is printed
+  // above rather than below.
   const captioned = block.kind === 'image' || block.kind === 'document'
 
   return (
@@ -111,6 +116,9 @@ function MediaItem({ block }: { block: Block }) {
         <figcaption className="mb-2 text-[11px] tracking-[0.18em] text-neutral-900 uppercase">
           {block.heading}
         </figcaption>
+      )}
+      {block.kind === 'carousel' && block.body && (
+        <p className="mb-3 text-sm leading-relaxed text-neutral-700">{block.body}</p>
       )}
       {figure}
       {captioned && block.body && (
@@ -147,6 +155,12 @@ function renderMedia(block: Block) {
           className="w-full rounded-sm border border-neutral-900/10 bg-paper"
         />
       )
+
+    case 'carousel': {
+      const images = carouselImages(block)
+      if (images.length === 0) return null
+      return <Carousel images={images} label={block.heading} />
+    }
 
     case 'embed': {
       const embedUrl = toEmbedUrl(block.url)

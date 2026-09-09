@@ -15,7 +15,7 @@ export default function App() {
         {/* The two halves used to be pages of their own, and links to both
             addresses are already out in the world. */}
         <Route path="/home" element={<Navigate to="/" replace />} />
-        <Route path="/technical" element={<Navigate to="/" replace />} />
+        <Route path="/projects" element={<Navigate to="/" replace />} />
         <Route
           path="/update"
           element={

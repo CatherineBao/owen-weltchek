@@ -20,15 +20,27 @@ export default function Logo({
   className = '',
   tone = 'ink',
   spin = false,
+  cadence = 'orbit',
   strokeWidth = RING.width,
 }: {
   className?: string
   /** Which way the ring is inked: near-black on paper, white on the clay band. */
   tone?: 'ink' | 'paper'
-  /** Whether the dial turns. The banner's does; the bar's and the footer's don't. */
+  /** Whether the dial turns. Every printing on the site does. */
   spin?: boolean
+  /**
+   * How it turns. `orbit` is one slow, even revolution — slow enough to read as
+   * a dial being wound rather than as an animation. `punch` steps it a letter at
+   * a time, at real keying speed, holding on each and snapping to the next in
+   * time with the bouncing dot, so the mark reads as the name being keyed in
+   * rather than spun. A punched dial only moves if the caller has also printed
+   * `MORSE_PUNCH_CSS`, which is the one place the timings are written.
+   */
+  cadence?: 'orbit' | 'punch'
   strokeWidth?: number
 }) {
+  const punched = spin && cadence === 'punch'
+
   return (
     <svg
       viewBox="0 0 100 100"
@@ -43,7 +55,7 @@ export default function Logo({
       {/* The spin sits on the <g> rather than the <svg> so it stays the dial's
           own, whatever else is done to the box above it. */}
       <g
-        className={spin ? 'morse-orbit' : undefined}
+        className={spin ? (punched ? 'morse-punch' : 'morse-orbit') : undefined}
         style={{ transformBox: 'view-box', transformOrigin: '50px 50px' }}
       >
         <circle

@@ -1,8 +1,26 @@
 import { useState } from 'react'
+import CarouselEditor from './CarouselEditor'
+import {
+  type EditorSlide,
+  revokeSlidePreviews,
+  toEditorSlides,
+  uploadSlides,
+} from './carouselSlides'
 import { createBlock, updateBlock } from './api'
-import { uploadFile } from './upload'
-import { button, buttonSave, field, fileInput, input, label, stack, textarea } from './ui'
-import { BLOCK_KINDS, type Block, type BlockKind } from '../types'
+import { DOCUMENT_ACCEPT, IMAGE_ACCEPT, uploadFile } from './upload'
+import {
+  alert,
+  breakable,
+  button,
+  buttonSave,
+  field,
+  fileInput,
+  input,
+  label,
+  stack,
+  textarea,
+} from './ui'
+import { BLOCK_KINDS, type Block, type BlockKind, carouselImages } from '../types'
 
 interface Props {
   projectId: string
@@ -15,13 +33,27 @@ interface Props {
 const needsFile = (kind: BlockKind) => kind === 'image' || kind === 'document'
 const needsUrl = (kind: BlockKind) => kind === 'link' || kind === 'embed'
 
+/** What the body field is for, which differs by kind more than the label does. */
+function bodyLabel(kind: BlockKind) {
+  if (kind === 'carousel') return 'Intro (Show Above)'
+  if (needsFile(kind)) return 'Caption / alt text'
+  if (needsUrl(kind)) return 'Link text'
+  return 'Text'
+}
+
 export default function BlockForm({ projectId, block, onSaved, onCancel }: Props) {
   const [kind, setKind] = useState<BlockKind>(block?.kind ?? 'text')
   const [heading, setHeading] = useState(block?.heading ?? '')
   const [body, setBody] = useState(block?.body ?? '')
   const [url, setUrl] = useState(block?.url ?? '')
   const [file, setFile] = useState<File | null>(null)
+  // Carousel slides. Held here rather than in the editor so that submit can
+  // upload them; the editor below only adds, captions, and reorders.
+  const [slides, setSlides] = useState<EditorSlide[]>(() =>
+    block ? toEditorSlides(carouselImages(block)) : [],
+  )
   const [progress, setProgress] = useState<number | null>(null)
+  const [progressNote, setProgressNote] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -36,8 +68,17 @@ export default function BlockForm({ projectId, block, onSaved, onCancel }: Props
 
     try {
       let fileFields = {}
+      let meta: Record<string, unknown> | undefined
 
-      if (needsFile(kind) && file) {
+      if (kind === 'carousel') {
+        if (slides.length === 0) throw new Error('Add at least one image')
+        setProgress(0)
+        const images = await uploadSlides(slides, (done, total, percentage) => {
+          setProgressNote(total > 1 ? `Image ${Math.min(done + 1, total)} of ${total}` : null)
+          setProgress(percentage)
+        })
+        meta = { ...block?.meta, images }
+      } else if (needsFile(kind) && file) {
         setProgress(0)
         const uploaded = await uploadFile(file, setProgress)
         fileFields = {
@@ -57,6 +98,7 @@ export default function BlockForm({ projectId, block, onSaved, onCancel }: Props
         heading,
         body,
         ...(needsUrl(kind) ? { url } : {}),
+        ...(meta ? { meta } : {}),
         ...fileFields,
       }
 
@@ -70,6 +112,9 @@ export default function BlockForm({ projectId, block, onSaved, onCancel }: Props
         setBody('')
         setUrl('')
         setFile(null)
+        // The files are in the blob store now; the local previews are spent.
+        revokeSlidePreviews(slides)
+        setSlides([])
       }
       onSaved()
     } catch (err) {
@@ -77,6 +122,7 @@ export default function BlockForm({ projectId, block, onSaved, onCancel }: Props
     } finally {
       setBusy(false)
       setProgress(null)
+      setProgressNote(null)
     }
   }
 
@@ -116,7 +162,7 @@ export default function BlockForm({ projectId, block, onSaved, onCancel }: Props
 
       <div className={field}>
         <label htmlFor={`${uid}-body`} className={label}>
-          {needsFile(kind) ? 'Caption / alt text' : needsUrl(kind) ? 'Link text' : 'Text'}
+          {bodyLabel(kind)}
         </label>
         <textarea
           id={`${uid}-body`}
@@ -125,6 +171,23 @@ export default function BlockForm({ projectId, block, onSaved, onCancel }: Props
           onChange={(e) => setBody(e.target.value)}
         />
       </div>
+
+      {kind === 'carousel' && (
+        <div className={`${field} min-w-0`}>
+          <CarouselEditor
+            uid={uid}
+            slides={slides}
+            onChange={setSlides}
+            disabled={busy}
+          />
+          {progress !== null && (
+            <p className="text-sm">
+              {progressNote ? `${progressNote} — ` : ''}
+              Uploading: {Math.round(progress)}%
+            </p>
+          )}
+        </div>
+      )}
 
       {needsUrl(kind) && (
         <div className={field}>
@@ -144,18 +207,18 @@ export default function BlockForm({ projectId, block, onSaved, onCancel }: Props
       )}
 
       {needsFile(kind) && (
-        <div className={field}>
+        <div className={`${field} min-w-0`}>
           <label htmlFor={`${uid}-file`} className={label}>
             {block?.url ? 'Replace file' : 'File'}
           </label>
           <input
             id={`${uid}-file`}
             type="file"
-            accept={kind === 'image' ? 'image/*' : 'application/pdf'}
+            accept={kind === 'image' ? IMAGE_ACCEPT : DOCUMENT_ACCEPT}
             className={fileInput}
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           />
-          <p className="text-sm text-neutral-600">
+          <p className={`${breakable} text-sm text-neutral-600`}>
             {file
               ? `Selected: ${file.name}`
               : kind === 'image'
@@ -163,7 +226,7 @@ export default function BlockForm({ projectId, block, onSaved, onCancel }: Props
                 : 'Choose a PDF.'}
           </p>
           {block?.url && (
-            <p className="text-sm">Current: {block.fileName || block.url}</p>
+            <p className={`${breakable} text-sm`}>Current: {block.fileName || block.url}</p>
           )}
           {progress !== null && (
             <p className="text-sm">Uploading: {Math.round(progress)}%</p>
@@ -182,7 +245,7 @@ export default function BlockForm({ projectId, block, onSaved, onCancel }: Props
         )}
       </div>
       {error && (
-        <p role="alert" className="text-sm">
+        <p role="alert" className={alert}>
           {error}
         </p>
       )}

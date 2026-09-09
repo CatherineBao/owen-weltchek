@@ -3,7 +3,7 @@ import { isAuthed } from '../../lib/auth.js'
 import { safeDeleteBlobs } from '../../lib/blobs.js'
 import { db } from '../../lib/db.js'
 import { error, idParam, json, noContent, readJson } from '../../lib/http.js'
-import { blocks, projects } from '../../lib/schema.js'
+import { blocks, carouselImagesFromMeta, projects } from '../../lib/schema.js'
 
 type ProjectInput = {
   title?: unknown
@@ -148,10 +148,16 @@ export async function DELETE(request: Request): Promise<Response> {
   // to be collected and deleted BEFORE the project row goes away — otherwise
   // the uploads are orphaned with nothing left pointing at them.
   const children = await db
-    .select({ url: blocks.url })
+    .select({ url: blocks.url, meta: blocks.meta })
     .from(blocks)
     .where(eq(blocks.projectId, id))
-  await safeDeleteBlobs(children.map((c) => c.url))
+  await safeDeleteBlobs(
+    children.flatMap((c) => [
+      c.url,
+      // A carousel keeps its slides in meta, so its files aren't in `url`.
+      ...carouselImagesFromMeta(c.meta).map((image) => image.url),
+    ]),
+  )
 
   const [deleted] = await db
     .delete(projects)

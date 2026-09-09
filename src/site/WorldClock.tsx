@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import ContactMarks from './ContactMarks'
-import { CONTACT, RESUME_URL } from './identity'
+import { CONTACT } from './identity'
+import { useScrollTo } from './scrollTo'
 
 /**
  * One face on the dial: a city, the zone its clock actually runs on, and the
@@ -48,18 +49,21 @@ const CITIES: City[] = [
   { code: 'AKL', name: 'Auckland', tz: 'Pacific/Auckland', offset: 12 },
 ]
 
-// Geometry, as percentages of the square the dial is drawn in — the same
-// proportions as the sketch, where a 50px clock rides a 500px circle on a
-// 1200px canvas. Neighbouring centres land 2·R·sin(7.5°) ≈ 11% apart, so a face
-// this size clears the next one round with room to spare.
-const RING = 41.7
+// Geometry, as percentages of the square the dial is drawn in — the sketch's
+// proportions, where a 50px clock rides a 500px circle on a 1200px canvas,
+// pulled in far enough that the names outside the ring still fit the square.
+// Neighbouring centres land 2·R·sin(7.5°) ≈ 9.9% apart, so a face this size
+// clears the next one round.
+const RING = 38
 const FACE = 9.2
 // City names ride just outside the ring rather than tucked under each face the
 // way the sketch does it: "Salt Lake City" set under its own clock is wide
 // enough to lie across the two faces either side of it, and pushing the names
 // out past the circle is the only placement that keeps twenty-four of them off
-// each other's dials.
-const LABEL = 49.5
+// each other's dials. The gap to the ring is what a name at three or nine
+// o'clock spends: those run sideways, away from the dial, so the ring has to
+// stand clear of them by more than the height of the ones at top and bottom.
+const LABEL = 45
 
 // Degrees per hour of local time. The whole dial is a 24-hour clock: one turn a
 // day, an hour of the world per step.
@@ -93,13 +97,11 @@ export default function WorldClock({
   email,
   phone,
   linkedinUrl,
-  resumeUrl,
   portfolioHref = '/',
 }: {
   email?: string | null
   phone?: string | null
   linkedinUrl?: string | null
-  resumeUrl?: string | null
   portfolioHref?: string
 }) {
   // Settings win when the row carries a value, and a blank or missing row
@@ -107,7 +109,7 @@ export default function WorldClock({
   const mail = email || CONTACT.email
   const tel = phone || CONTACT.phone
   const linkedin = linkedinUrl || CONTACT.linkedin
-  const resume = resumeUrl || RESUME_URL
+  const scrollTo = useScrollTo()
 
   const sectionRef = useRef<HTMLElement>(null)
   const [now, setNow] = useState(() => new Date())
@@ -201,6 +203,10 @@ export default function WorldClock({
         y: 50 - Math.cos(rad) * RING,
         labelX: 50 + Math.sin(rad) * LABEL,
         labelY: 50 - Math.cos(rad) * LABEL,
+        // -1 at nine o'clock, 0 at top and bottom, +1 at three: how much of
+        // the name has to be swung off its own centre to keep it outside the
+        // ring. See the label below.
+        anchor: Math.sin(rad),
       }
     })
 
@@ -223,12 +229,13 @@ export default function WorldClock({
       // The header reads this off the DOM: it is the one band dark enough that
       // the nav has to turn white to stay legible crossing it.
       data-header-dark
-      className="relative z-10 bg-clay px-6 py-20 sm:px-12 sm:py-32"
+      className="relative z-10 bg-clay px-6 py-20 sm:px-16 sm:py-32"
       aria-label="World clock"
     >
       {/* The square the dial is drawn in. It stops short of the viewport edge
-          because each face carries its label underneath, and the bottom of the
-          ring hangs its label past the edge of the circle. */}
+          because the names sit outside the ring: the ones at three and nine
+          o'clock run past the square altogether, and the section's side
+          padding is the room they run into. */}
       <div className="relative mx-auto aspect-square w-full max-w-[720px]">
         {/* The track the faces ride on, and the two hours that never move: the
             dial turns under them, midnight at the top, noon at the foot. */}
@@ -266,19 +273,32 @@ export default function WorldClock({
                 viewer={face.isViewer}
               />
             </div>
-            {/* Twenty-four names round a phone-width circle would still run
-                into each other out here, so the narrow layout falls back to the
-                three-letter code; the full name stays on the face's own label,
-                for anyone reading by ear or hovering. */}
+            {/* Twenty-four names round a narrow circle would still run into
+                each other out here, so anything under a tablet falls back to
+                the three-letter code; the full name stays on the face's own
+                label, for anyone reading by ear or hovering.
+
+                A name centred on its point is half inside the ring, which is
+                fine at the top and the foot of the dial — it clears the face
+                above or below it — and is exactly what puts "San Francisco"
+                across its own clock when the city swings round to three or
+                nine o'clock. So the name is swung off its centre by how far
+                round the side it is: centred top and bottom, and hung by its
+                inner edge at the sides, where it then reads outwards, away
+                from the dial. */}
             <span
-              className={`absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center text-[8px] tracking-[0.12em] whitespace-nowrap uppercase sm:text-[9px] ${
+              className={`absolute flex flex-col items-center text-[8px] tracking-[0.12em] whitespace-nowrap uppercase sm:text-[9px] ${
                 face.isViewer ? 'text-white' : 'text-white/55'
               }`}
-              style={{ left: `${face.labelX}%`, top: `${face.labelY}%` }}
+              style={{
+                left: `${face.labelX}%`,
+                top: `${face.labelY}%`,
+                transform: `translate(${-50 + 50 * face.anchor}%, -50%)`,
+              }}
               aria-hidden="true"
             >
-              <span className="sm:hidden">{face.city.code}</span>
-              <span className="hidden sm:inline">{face.city.name}</span>
+              <span className="md:hidden">{face.city.code}</span>
+              <span className="hidden md:inline">{face.city.name}</span>
             </span>
           </div>
         ))}
@@ -286,25 +306,24 @@ export default function WorldClock({
         {/* The hub. Everything here is real contact, so it sits inside the dial
             rather than under it. */}
         <div className="absolute top-1/2 left-1/2 flex w-[58%] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-5 text-center">
-          {/* The two pills stack, one over the other, at every width. */}
+          {/* One pill now that the resume has come off; it keeps the column so
+              a second is a matter of adding it back rather than relaying the
+              hub. */}
           <div className="flex flex-col items-center gap-3">
-           
-            <a
-              href={resume}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full border border-white px-4 py-2 text-[9px] tracking-[0.22em] text-white uppercase transition-colors hover:bg-white hover:text-clay sm:px-6 sm:py-2.5 sm:text-[11px]"
-            >
-              Resume
-            </a>
-            {/* An external portfolio URL out of settings opens in its own
-                tab; the default is a route on this site, which must not. */}
+            {/* An external portfolio URL out of settings opens in its own tab;
+                the default is an anchor back up this page, which must not — it
+                travels instead, on the same curve and the same measurement off
+                the bar as the nav's own links, so pressing it here and pressing
+                Projects up in the bar arrive the same way. `useScrollTo` reads
+                the href and leaves anything that is not an anchor to the
+                browser, so the external case needs no guard of its own. */}
             <a
               href={portfolioHref}
+              onClick={(event) => scrollTo(event, portfolioHref)}
               {...(portfolioHref.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}
               className="rounded-full border border-white px-4 py-2 text-[9px] tracking-[0.22em] text-white uppercase transition-colors hover:bg-white hover:text-clay sm:px-6 sm:py-2.5 sm:text-[11px]"
             >
-              Technical portfolio
+              Portfolio
             </a>
           </div>
 

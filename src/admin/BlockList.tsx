@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react'
 import { Reorder, useDragControls } from 'framer-motion'
 import BlockForm from './BlockForm'
 import { deleteBlock, reorderBlocks } from './api'
-import { button, buttonDanger } from './ui'
-import type { Block } from '../types'
+import { alert, button, buttonDanger } from './ui'
+import { type Block, carouselImages } from '../types'
 
 interface Props {
   projectId: string
@@ -68,7 +68,7 @@ export default function BlockList({ projectId, blocks, onChanged }: Props) {
       <div>
         <h3 className="mb-4 font-semibold">Supporting documents</h3>
         {error && (
-          <p role="alert" className="mb-4 text-sm">
+          <p role="alert" className={`mb-4 ${alert}`}>
             {error}
           </p>
         )}
@@ -153,11 +153,17 @@ interface RowProps {
 function BlockRow({ block, isOnly, onDrop, onMove, onEdit, onDelete }: RowProps) {
   const controls = useDragControls()
 
+  const slides = carouselImages(block)
+
   const label = [
     block.kind,
     block.heading,
     block.body?.slice(0, 60),
-    block.fileName,
+    // A carousel has no fileName of its own; its size is the useful thing to
+    // see without opening it.
+    block.kind === 'carousel'
+      ? `${slides.length} image${slides.length === 1 ? '' : 's'}`
+      : block.fileName,
   ]
     .filter(Boolean)
     .join(' - ')
