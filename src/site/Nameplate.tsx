@@ -110,14 +110,14 @@ export default function Nameplate({ name, school, degree, tagline }: Props) {
       {/* The mark carries no words, so this block is the heading — for screen
           readers and crawlers as much as for the eye. The tagline is its last
           line rather than a mark of its own: the two said the same thing. */}
-      <div className="max-w-[80vw] text-center sm:text-right">
+      {/* <div className="max-w-[80vw] text-center sm:text-right">
         <h1 className="text-sm font-semibold tracking-[0.2em] text-neutral-800 uppercase">
           {heading.name}
         </h1>
         <p className="mt-2 text-xs tracking-[0.12em] text-neutral-600">{heading.school}</p>
         <p className="text-xs tracking-[0.12em] text-neutral-600">{heading.degree}</p>
         <p className="mt-2 text-[11px] tracking-[0.14em] text-neutral-600">{heading.majors}</p>
-      </div>
+      </div> */}
     </div>
   )
 }
