@@ -1,5 +1,4 @@
 import Logo from './Logo'
-import { IDENTITY } from './identity'
 import { MORSE_LETTERS, MORSE_PUNCH_CSS } from './morse'
 
 // The mark: the morse dial, printed as large as the band allows. `size` is how
@@ -17,14 +16,6 @@ const DOT = { size: '1.8%', gap: '7%', color: '#1c1917' }
 // mark, and the letter is a reading of it going past.
 const LETTER = { scale: 0.18 }
 
-interface Props {
-  name?: string | null
-  school?: string | null
-  degree?: string | null
-  /** The disciplines line. Prints where the hardcoded majors used to. */
-  tagline?: string | null
-}
-
 /**
  * The head of the work band, and the site's masthead now that the banner above
  * it is gone: the big mark and the word for what follows on one side, the name
@@ -32,17 +23,7 @@ interface Props {
  * but this is the printing that carries the whole of it — which is why the
  * page's heading levels live here and the bar carries none.
  */
-export default function Nameplate({ name, school, degree, tagline }: Props) {
-  // Settings win wherever the row carries a value, and a blank or missing row
-  // falls back — same rule the world clock and the footer run on, so a fresh
-  // database still prints a whole heading.
-  const heading = {
-    name: name || IDENTITY.name,
-    school: school || IDENTITY.school,
-    degree: degree || IDENTITY.degree,
-    majors: tagline || IDENTITY.majors,
-  }
-
+export default function Nameplate() {
   return (
     <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
       {/* The mark and the word it heads, as one cluster — the dial reads as the
@@ -107,17 +88,6 @@ export default function Nameplate({ name, school, degree, tagline }: Props) {
         </h2>
       </div>
 
-      {/* The mark carries no words, so this block is the heading — for screen
-          readers and crawlers as much as for the eye. The tagline is its last
-          line rather than a mark of its own: the two said the same thing. */}
-      {/* <div className="max-w-[80vw] text-center sm:text-right">
-        <h1 className="text-sm font-semibold tracking-[0.2em] text-neutral-800 uppercase">
-          {heading.name}
-        </h1>
-        <p className="mt-2 text-xs tracking-[0.12em] text-neutral-600">{heading.school}</p>
-        <p className="text-xs tracking-[0.12em] text-neutral-600">{heading.degree}</p>
-        <p className="mt-2 text-[11px] tracking-[0.14em] text-neutral-600">{heading.majors}</p>
-      </div> */}
     </div>
   )
 }

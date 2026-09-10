@@ -42,12 +42,7 @@ export default function Home() {
           starting under it. */}
       <div id="work" className="relative z-10 scroll-mt-16 bg-paper/85">
         <header className="mx-auto max-w-6xl px-6 pt-28 pb-14 sm:pt-32">
-          <Nameplate
-            name={settings?.site_title}
-            school={settings?.site_school}
-            degree={settings?.site_degree}
-            tagline={settings?.site_tagline}
-          />
+          <Nameplate />
         </header>
 
         {state.status === 'loading' && (
